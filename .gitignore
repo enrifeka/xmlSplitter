@@ -1,0 +1,16 @@
+# binary file (without extension)
+*
+!*/
+!*.*
+
+# .DS_Store
+.DS_Store 
+
+# logs
+logs.txt
+
+# splitted xml files
+xmlFiles/
+
+# visual studio code configurations
+.vscode/
