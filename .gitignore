@@ -1,7 +1,8 @@
-# binary file (without extension)
+# binary file (without extension or .exe)
 *
 !*/
 !*.*
+*.exe
 
 # .DS_Store
 .DS_Store 
