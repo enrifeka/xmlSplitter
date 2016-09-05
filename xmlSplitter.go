@@ -45,7 +45,7 @@ func main() {
 		writeToLogFile(err.Error())
 		return
 	}
-	err = createSplitedXMLFiles(&xmlData)
+	err = createSplittedXMLFiles(&xmlData)
 	if err != nil {
 		writeToLogFile(err.Error())
 		return
@@ -83,7 +83,7 @@ func getFirstXMLFileFound() (string, error) {
 	return "", errors.New("Nuk u gjet asnje file xml ne direktorine ku ekzekutohet programi")
 }
 
-func createSplitedXMLFiles(doc *document) error {
+func createSplittedXMLFiles(doc *document) error {
 	exists := func(name string) bool {
 		if _, err := os.Stat(name); err != nil {
 			if os.IsNotExist(err) {
