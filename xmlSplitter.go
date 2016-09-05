@@ -53,8 +53,8 @@ func main() {
 	writeToLogFile("Ndarja e XML u krye me sukses")
 }
 
-func writeToLogFile(message string) {
-	content := fmt.Sprintf("%s: %s\n", time.Now(), message)
+func writeToLogFile(log string) {
+	content := fmt.Sprintf("%s: %s\n", time.Now(), log)
 
 	f, err := os.OpenFile("logs.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
