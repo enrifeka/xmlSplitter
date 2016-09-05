@@ -55,7 +55,6 @@ func main() {
 
 func writeToLogFile(log string) {
 	content := fmt.Sprintf("%s: %s\n", time.Now(), log)
-
 	f, err := os.OpenFile("logs.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		fmt.Println(err.Error())
