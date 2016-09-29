@@ -118,8 +118,8 @@ func createSplittedXMLFiles(doc *document) error {
 			return err
 		}
 		splitFileName := path.Join(directoryName, fmt.Sprintf("splitFile%d.xml", i))
-		contentStr := xml.Header + string(cont)
-		ioutil.WriteFile(splitFileName, []byte(contentStr), 0644)
+		content := append([]byte(xml.Header), cont...)
+		ioutil.WriteFile(splitFileName, content, 0644)
 	}
 	return nil
 }
