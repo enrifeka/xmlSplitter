@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/xml"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -13,8 +14,11 @@ import (
 )
 
 const (
-	directoryName             string = "xmlFiles"
-	xmlNumerOfElementsPerFile int    = 5
+	directoryName string = "xmlFiles"
+)
+
+var (
+	noElements = flag.Int("n", 5, "Numri i elementeve per file")
 )
 
 type subDocument struct {
@@ -29,6 +33,7 @@ type document struct {
 }
 
 func main() {
+	flag.Parse()
 	fileName, err := getFirstXMLFileFound()
 	if err != nil {
 		writeToLogFile(err.Error())
@@ -45,7 +50,7 @@ func main() {
 		writeToLogFile(err.Error())
 		return
 	}
-	err = createSplittedXMLFiles(&xmlData)
+	err = createSplittedXMLFiles(&xmlData, *noElements)
 	if err != nil {
 		writeToLogFile(err.Error())
 		return
@@ -75,14 +80,18 @@ func getFirstXMLFileFound() (string, error) {
 		return "", err
 	}
 	for _, file := range files {
-		if strings.Contains(file.Name(), ".xml") || strings.Contains(file.Name(), ".XML") {
+
+		if strings.Contains(strings.ToUpper(file.Name()), ".XML") {
 			return file.Name(), nil
 		}
 	}
 	return "", errors.New("Nuk u gjet asnje file xml ne direktorine ku ekzekutohet programi")
 }
 
-func createSplittedXMLFiles(doc *document) error {
+func createSplittedXMLFiles(doc *document, xmlNumerOfElementsPerFile int) error {
+	if xmlNumerOfElementsPerFile <= 0 {
+		return errors.New("Numri i elementëve për file nuk mund të jetë më i vogël ose i barabartë me zero")
+	}
 	exists := func(name string) bool {
 		if _, err := os.Stat(name); err != nil {
 			if os.IsNotExist(err) {
@@ -103,15 +112,18 @@ func createSplittedXMLFiles(doc *document) error {
 	}
 	div := float64(len(doc.SubDocuments)) / float64(xmlNumerOfElementsPerFile)
 	nrFiles := int(math.Ceil(div))
-	lastFileOffset := len(doc.SubDocuments) % xmlNumerOfElementsPerFile
-	currOffset := 0
 	for i := 0; i < nrFiles; i++ {
+		var fileContent document
 		if i == nrFiles-1 {
-			currOffset = lastFileOffset
-		}
-		fileContent := document{
-			XMLName:      doc.XMLName,
-			SubDocuments: doc.SubDocuments[i*xmlNumerOfElementsPerFile : (i+1)*xmlNumerOfElementsPerFile-currOffset],
+			fileContent = document{
+				XMLName:      doc.XMLName,
+				SubDocuments: doc.SubDocuments[i*xmlNumerOfElementsPerFile:],
+			}
+		} else {
+			fileContent = document{
+				XMLName:      doc.XMLName,
+				SubDocuments: doc.SubDocuments[i*xmlNumerOfElementsPerFile : (i+1)*xmlNumerOfElementsPerFile],
+			}
 		}
 		cont, err := xml.MarshalIndent(fileContent, "", "   ")
 		if err != nil {
